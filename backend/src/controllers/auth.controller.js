@@ -89,20 +89,20 @@ const loginUser = asyncHandler(async (req, res) => {
     if (!email && !password) {
         throw new ApiError(400, "All credentials are required")
     }
-    
+
     const user = await User.findOne({ email });
-    
+
     if (!user) {
         throw new ApiError(400, "user does not exist");
     }
-    
+
     const isPasswordValid = user.isPasswordCorrect(password);
-    
+
     if (!isPasswordValid) {
         throw new ApiError(400, "Invalid credentials");
     }
 
-    const {accessToken, refreshToken} = await generateAccessAndRefreshTokens(user._id)
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id)
 
     const loggedInUser = await User.findById(user._id).select(
         "-password -refreshToken -emailVerificationToken -emailVerificationExpiry",
@@ -120,15 +120,48 @@ const loginUser = asyncHandler(async (req, res) => {
     }
 
     return res
-    .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
-    .json(
-        new ApiResponse(200, { user: loggedInUser, accessToken, refreshToken}, "User logged in successfully")
-    )
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+            new ApiResponse(200, { user: loggedInUser, accessToken, refreshToken }, "User logged in successfully")
+        )
 })
+
+
+const logoutUser = asyncHandler(async (req, res) => {
+    // const {user} = req.user
+
+    await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set: {
+                refreshToken: ""
+            }
+        },
+        {
+            new: true
+        }
+    );
+
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    return res
+    .status(200)
+    .clearCookie("accessToken", accessToken)
+    .clearCookie("refreshToken", refreshToken)
+    .json(
+        new ApiResponse(200, {}, "User logged out")
+    )
+});
+
+
 
 export {
     registerUser,
-    loginUser
+    loginUser,
+    logoutUser
 };
