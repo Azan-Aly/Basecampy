@@ -23,7 +23,7 @@ const sendEmail = async (options) => {
         port: process.env.MAILTRAP_SMTP_PORT,
         auth: {
             user: process.env.MAILTRAP_SMTP_USER,
-            password: process.env.MAILTRAP_SMTP_PASS,
+            pass: process.env.MAILTRAP_SMTP_PASS,
         },
     });
 
@@ -39,9 +39,10 @@ const sendEmail = async (options) => {
         await transporter.sendMail(mail);
     } catch (error) {
         console.error(
-            "Email service failed silently. Make sure that you have provided the mailtrap credentials in the dotenv file",
+            "Email service failed. Make sure that you have provided the mailtrap credentials in the dotenv file",
         );
         console.error("Error : ", error);
+        throw error;
     }
 };
 

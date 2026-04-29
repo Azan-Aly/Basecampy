@@ -12,6 +12,8 @@ const generateAccessAndRefreshTokens = async (userId) => {
 
         user.refreshToken = refreshToken;
         await user.save({ validateBeforeSave: false });
+
+        return { accessToken, refreshToken };
     } catch (error) {
         throw new ApiError(
             500,
@@ -21,7 +23,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
-    const { username, email, password, role } = req.body;
+    const { username, email, password, fullName } = req.body;
 
     const existingUser = await User.findOne({
         $or: [{ email }, { username }],
@@ -39,6 +41,7 @@ const registerUser = asyncHandler(async (req, res) => {
         email,
         password,
         username,
+        fullName,
         isEmailVerified: false,
     });
 
@@ -55,7 +58,7 @@ const registerUser = asyncHandler(async (req, res) => {
         subject: "Please verify your email",
         mailgenContent: emailVerificationMailgenContent(
             user.username,
-            `${req.protocol}://${req.get.host}/api/v1/users/verify-email/${unHashedToken}`,
+            `${req.protocol}://${req.get('host')}/api/v1/users/verify-email/${unHashedToken}`,
         ),
     });
 

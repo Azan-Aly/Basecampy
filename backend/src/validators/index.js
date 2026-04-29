@@ -1,38 +1,30 @@
-import { body } from "express-validator"
+import { body } from "express-validator";
 
 const userRegisterValidator = () => {
     return [
         body("email")
             .trim()
-            .notEmpty()
-            .withMessage("Email is required")
-            .isEmail()
-            .withMessage("Email is Invalid"),
+            .notEmpty().withMessage("Email is required")
+            .bail()
+            .isEmail().withMessage("Email is invalid"),
 
         body("username")
             .trim()
-            .notEmpty()
-            .withMessage("Username is required")
-            .isLowerCase()
-            .withMessage("Username must be in lower case")
-            .isLength({ min: 6 })
-            .withMessage("Username must be at least 6 characters"),
+            .notEmpty().withMessage("Username is required")
+            .bail()
+            .isLength({ min: 6 }).withMessage("Username must be at least 6 characters")
+            .matches(/^[a-z0-9_]+$/).withMessage("Username can only contain lowercase letters, numbers, and underscores"),
 
         body("password")
             .trim()
-            .notEmpty()
-            .withMessage("Password is required"),
+            .notEmpty().withMessage("Password is required")
+            .bail()
+            .isLength({ min: 6 }).withMessage("Password must be at least 6 characters"),
 
-        body("fullname")
-            .optional()
-            .trim(),
+        body("fullName")
+            .trim()
+            .notEmpty().withMessage("Full name is required"),
+    ];
+};
 
-
-    ]
-}
-
-
-
-export {
-    userRegisterValidator
-}
+export { userRegisterValidator };
