@@ -98,7 +98,7 @@ userSchema.methods.generateAccessToken = function () {
 userSchema.methods.generateRefreshToken = function () {
     return jwt.sign(
         {
-            _id: this._id
+            _id: this._id,
         },
         process.env.REFRESH_TOKEN_SECRET,
         { expiresIn: process.env.REFRESH_TOKEN_EXPIRY },
@@ -113,8 +113,8 @@ userSchema.methods.generateTemporaryToken = function () {
         .update(unHashedToken)
         .digest("hex");
 
-    const tokenExpiry = Date.now() + (20 * 60 * 1000); //20 mins
-    
+    const tokenExpiry = Date.now() + 20 * 60 * 1000; //20 mins
+
     return { unHashedToken, hashedToken, tokenExpiry };
 };
 
