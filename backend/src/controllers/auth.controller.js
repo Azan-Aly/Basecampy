@@ -294,24 +294,24 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 const forgotPassword = asyncHandler(async (req, res) => {
-    const {email} = req.body;
+    const { email } = req.body;
 
     if (!email) {
         throw new ApiError(400, "Email is required");
     }
 
-    const user = await User.findOne({email});
+    const user = await User.findOne({ email });
 
     if (!user) {
         throw new ApiError(404, "User does not exist")
     }
 
-    const {unHashedToken, hashedToken, tokenExpiry} = user.generateTemporaryToken();
+    const { unHashedToken, hashedToken, tokenExpiry } = user.generateTemporaryToken();
 
     user.forgotPasswordToken = hashedToken;
     user.forgotPasswordExpiry = tokenExpiry;
 
-    await user.save({validateBeforeSave: false})
+    await user.save({ validateBeforeSave: false })
 
     await sendEmail({
         email: user?.email,
@@ -323,11 +323,53 @@ const forgotPassword = asyncHandler(async (req, res) => {
     })
 
     return res.status(200)
-    .json(
-        new ApiResponse(200, {}, "Reset password mail has been sent")
-    )
+        .json(
+            new ApiResponse(200, {}, "Reset password mail has been sent")
+        )
 
 })
+
+const resetPassword = asyncHandler(async (req, res) => {
+    const { resetToken } = req.params;
+    const { newPassword, confirmPassword } = req.body;
+
+    if (newPassword !== confirmPassword) {
+        throw new ApiError(400, "Password must remains same in both fields")
+    }
+
+    let hashedToken = crypto.createHash("sha256")
+        .update(resetToken)
+        .digest("hex")
+
+    const user = await User.findOne({
+        forgotPasswordToken: hashedToken,
+        forgotPasswordExpiry: { $gt: Date.now() }
+    })
+
+    if (!user) {
+        throw new ApiError(489, "Token is invalid or expired");
+    }
+
+    user.forgotPasswordExpiry = undefined;
+    user.forgotPasswordToken = undefined;
+
+    user.password = newPassword
+
+    await user.save({ validateBeforeSave: false })
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, {}, "Password reset successfully")
+        )
+})
+
+
+
+// const some = asyncHandler(async (req, res) => {
+
+// })
+
 
 // const some = asyncHandler(async (req, res) => {
 
