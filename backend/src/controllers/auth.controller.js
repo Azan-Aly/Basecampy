@@ -365,10 +365,30 @@ const resetPassword = asyncHandler(async (req, res) => {
 })
 
 
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+    const {oldPassword, newPassword} = req.body;
 
-// const some = asyncHandler(async (req, res) => {
+    if (!(oldPassword && newPassword)) {
+        throw new ApiError(400, "All ceredentials are required")
+    }
 
-// })
+    const user = User.findById(req.user?._id);
+
+    const isPasswordValid = await user.isPasswordCorrect(oldPassword);
+
+    if (!isPasswordValid) {
+        throw new ApiError(400, "Invalid old Password")
+    }
+
+    user.password = newPassword;
+    await user.save({validateBeforeSave: false})
+
+    return res 
+        .status(200)
+        .json(
+            new ApiResponse(200, {}, "Password Changed Successfully")
+        )
+})
 
 
 // const some = asyncHandler(async (req, res) => {
@@ -382,4 +402,7 @@ export {
     getCurrentUser,
     verifyEmail,
     resendEmailVerification,
+    forgotPassword,
+    resetPassword,
+    changeCurrentPassword
 };

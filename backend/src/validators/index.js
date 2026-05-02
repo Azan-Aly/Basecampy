@@ -54,4 +54,64 @@ const userLoginValidator = () => {
     ];
 };
 
-export { userRegisterValidator, userLoginValidator };
+
+const userChangeCurrentPasswordValidator = () => {
+    return [
+        body("oldPassword")
+            .trim()
+            .notEmpty()
+            .withMessage("Old Password is required")
+            .bail()
+            .isLength({ min: 6 })
+            .withMessage("Password must be at least 6 characters"),
+
+        body("newPassword")
+            .trim()
+            .notEmpty()
+            .withMessage("New Password is required")
+            .bail()
+            .isLength({ min: 6 })
+            .withMessage("Password must be at least 6 characters"),
+    ];
+};
+
+const userforgotPasswordValidator = () => {
+    return [
+        body("email")
+            .trim()
+            .notEmpty()
+            .withMessage("Email is required")
+            .bail()
+            .isEmail()
+            .withMessage("Email is Invalid"),
+    ];
+};
+
+
+const userResetForgotPasswordValidator = () => {
+    return [
+        body("newPassword")
+            .trim()
+            .notEmpty()
+            .withMessage("New Password is required")
+            .bail()
+            .isLength({ min: 6 })
+            .withMessage("Password must be at least 6 characters"),
+
+        body("confirmPassword")
+            .trim()
+            .notEmpty()
+            .withMessage("Confirm Password is required")
+            .bail()
+            .isLength({ min: 6 })
+            .withMessage("Password must be at least 6 characters"),
+    ]
+}
+
+export {
+    userRegisterValidator,
+    userLoginValidator,
+    userChangeCurrentPasswordValidator,
+    userforgotPasswordValidator,
+    userResetForgotPasswordValidator
+};
