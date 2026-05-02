@@ -54,7 +54,6 @@ const userLoginValidator = () => {
     ];
 };
 
-
 const userChangeCurrentPasswordValidator = () => {
     return [
         body("oldPassword")
@@ -87,7 +86,6 @@ const userforgotPasswordValidator = () => {
     ];
 };
 
-
 const userResetForgotPasswordValidator = () => {
     return [
         body("newPassword")
@@ -105,13 +103,13 @@ const userResetForgotPasswordValidator = () => {
             .bail()
             .isLength({ min: 6 })
             .withMessage("Password must be at least 6 characters"),
-    ]
-}
+    ];
+};
 
 export {
     userRegisterValidator,
     userLoginValidator,
     userChangeCurrentPasswordValidator,
     userforgotPasswordValidator,
-    userResetForgotPasswordValidator
+    userResetForgotPasswordValidator,
 };

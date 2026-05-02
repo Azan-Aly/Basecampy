@@ -34,10 +34,25 @@ router.route("/resend-email-verification").post(resendEmailVerification);
 // verify email
 router.route("/verify-email/:verificationToken").get(verifyEmail);
 // change Password
-router.route("/change-current-password").post(verifyJWT, userChangeCurrentPasswordValidator(), validate, changeCurrentPassword)
+router
+    .route("/change-current-password")
+    .post(
+        verifyJWT,
+        userChangeCurrentPasswordValidator(),
+        validate,
+        changeCurrentPassword,
+    );
 // forgot & reset password
-router.route("/forgot-password").post(verifyJWT, userforgotPasswordValidator(), validate, forgotPassword)
-router.route("/reset-password").post(verifyJWT, userResetForgotPasswordValidator(), validate, resetPassword)
-
+router
+    .route("/forgot-password")
+    .post(verifyJWT, userforgotPasswordValidator(), validate, forgotPassword);
+router
+    .route("/reset-password")
+    .post(
+        verifyJWT,
+        userResetForgotPasswordValidator(),
+        validate,
+        resetPassword,
+    );
 
 export default router;
