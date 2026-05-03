@@ -400,6 +400,7 @@ export {
     getCurrentUser,
     verifyEmail,
     resendEmailVerification,
+    refreshAccessToken,
     forgotPassword,
     resetPassword,
     changeCurrentPassword,
