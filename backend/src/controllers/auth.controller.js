@@ -8,6 +8,7 @@ import {
     sendEmail,
 } from "../utils/mail.js";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
@@ -218,7 +219,8 @@ const verifyEmail = asyncHandler(async (req, res) => {
 });
 
 const resendEmailVerification = asyncHandler(async (req, res) => {
-    const user = await User.findById(req?.user_id);
+    const user = await User.findById(req.user?._id);
+
     if (!user) {
         throw new ApiError(404, "User does not exist");
     }
@@ -240,13 +242,13 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
         subject: "Please verify your email",
         mailgenContent: emailVerificationMailgenContent(
             user.username,
-            `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unHashedToken}`,
+            `${req.protocol}://${req.get("host")}/api/v1/auth/verify-email/${unHashedToken}`,
         ),
     });
 
     return res
         .status(200)
-        .json(new ApiError(200, {}, "Email has been sent again"));
+        .json(new ApiResponse(200, {}, "Email has been sent again"));
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
@@ -337,7 +339,7 @@ const resetPassword = asyncHandler(async (req, res) => {
     const { newPassword, confirmPassword } = req.body;
 
     if (newPassword !== confirmPassword) {
-        throw new ApiError(400, "Password must remains same in both fields");
+        throw new ApiError(400, "Password must match");
     }
 
     let hashedToken = crypto
@@ -351,7 +353,7 @@ const resetPassword = asyncHandler(async (req, res) => {
     });
 
     if (!user) {
-        throw new ApiError(489, "Token is invalid or expired");
+        throw new ApiError(400, "Token is invalid or expired");
     }
 
     user.forgotPasswordExpiry = undefined;
@@ -370,10 +372,10 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     const { oldPassword, newPassword } = req.body;
 
     if (!(oldPassword && newPassword)) {
-        throw new ApiError(400, "All ceredentials are required");
+        throw new ApiError(400, "All credentials are required");
     }
 
-    const user = User.findById(req.user?._id);
+    const user = await User.findById(req.user?._id);
 
     const isPasswordValid = await user.isPasswordCorrect(oldPassword);
 

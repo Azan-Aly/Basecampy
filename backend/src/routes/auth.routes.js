@@ -31,17 +31,18 @@ router.route("/refresh-token").post(refreshAccessToken);
 router.route("/verify-email/:verificationToken").get(verifyEmail);
 // forgot & reset password
 router
-.route("/forgot-password")
-.post(userforgotPasswordValidator(), validate, forgotPassword);
+    .route("/forgot-password")
+    .post(userforgotPasswordValidator(), validate, forgotPassword);
 router
-.route("/reset-password/:resetToken")
-.post(userResetForgotPasswordValidator(), validate, resetPassword);
-
+    .route("/reset-password/:resetToken")
+    .post(userResetForgotPasswordValidator(), validate, resetPassword);
 
 // secured routes
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/current-user").get(verifyJWT, getCurrentUser);
-router.route("/resend-email-verification").post(verifyJWT, resendEmailVerification);
+router
+    .route("/resend-email-verification")
+    .post(verifyJWT, resendEmailVerification);
 router
     .route("/change-current-password")
     .post(
@@ -50,6 +51,5 @@ router
         validate,
         changeCurrentPassword,
     );
-
 
 export default router;
