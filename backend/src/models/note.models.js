@@ -2,22 +2,24 @@ import mongoose, { mongo, Schema } from "mongoose";
 import { Project } from "./project.models.js";
 import { User } from "./user.models.js";
 
-const noteSchema = new Schema({
-    project: {
-        type: Schema.Types.ObjectId,
-        ref: "Project",
-        required: true
+const noteSchema = new Schema(
+    {
+        project: {
+            type: Schema.Types.ObjectId,
+            ref: "Project",
+            required: true,
+        },
+        createdBy: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+        },
+        content: {
+            type: String,
+            required: true,
+        },
     },
-    createdBy: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-        required: true
-    },
-    content:{
-        type: String,
-        required: true
-    }
-
-}, {timestamps: true})
+    { timestamps: true },
+);
 
 export const Note = mongoose.model("Note", noteSchema);
