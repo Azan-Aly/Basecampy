@@ -15,7 +15,6 @@ process.on("uncaughtException", (err) => {
     process.exit(1);
 });
 
-
 connectDB()
     .then(() => {
         server = app.listen(port, () => {
@@ -25,7 +24,6 @@ connectDB()
     .catch((err) => {
         console.error("MONGODB connection failed ", err);
     });
-
 
 // Handle unhandled promise rejections
 process.on("unhandledRejection", (err) => {

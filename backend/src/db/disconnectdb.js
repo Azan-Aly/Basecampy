@@ -8,6 +8,6 @@ const disconnectDB = async () => {
         console.error("Error disconnecting from MongoDB", error);
         process.exit(1);
     }
-}
+};
 
 export default disconnectDB;
